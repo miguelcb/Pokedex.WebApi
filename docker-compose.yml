@@ -1,0 +1,45 @@
+version: '3.4'
+services:
+    db:
+
+        image: mcr.microsoft.com/mssql/server
+        environment: 
+            SA_PASSWORD: "Jko3va-D9821jhsvGD"
+            ACCEPT_EULA: "Y"
+            MSSQL_PID: "Developer"
+        volumes:
+         # directory with sql script on pc to /scripts/
+         # - ./data/mssql:/scripts/
+          - ./Pokedex.WebApi/create-db.sql:/create-db.sql
+        command:
+          - /bin/bash
+          - -c 
+          - |
+            # Launch MSSQL and send to background
+            /opt/mssql/bin/sqlservr &
+            # Wait 30 seconds for it to be available
+            # (lame, I know, but there's no nc available to start prodding network ports)
+            sleep 30
+            # Run every script in /scripts
+            # TODO set a flag so that this is only done once on creation, 
+            #      and not every time the container runs
+
+            /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -l 30 -e -i create-db.sql
+            # So that the container doesn't shut down, sleep this thread
+            sleep infinity
+        restart: always
+    webspa:
+        image: pokeapp/api
+        build:
+            context: .
+        environment:
+            - ASPNETCORE_ENVIRONMENT=staging
+            - ASPNETCORE_URLS=http://+:5000    
+        ports:
+            - 0.0.0.0:5000:5000
+        depends_on: 
+            - db
+
+volumes:
+    appbuild:
+    dbvol:

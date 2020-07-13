@@ -29,7 +29,7 @@ namespace Pokedex.WebApi
 
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/build";
+                configuration.RootPath = "ClientApp/pokeapp";
             });
         }
 
@@ -42,6 +42,8 @@ namespace Pokedex.WebApi
             }
 
             app.UseStaticFiles();
+
+            app.UseSpaStaticFiles();
 
             app.UseRouting();
 

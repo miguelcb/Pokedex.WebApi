@@ -4,13 +4,13 @@ ARG NODE_IMAGE=node:12-alpine3.10
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 5000
 
 FROM ${NODE_IMAGE} as node-build
 WORKDIR /web
-COPY ClientApp/pokeapp/package.json .
-COPY ClientApp/pokeapp/package-lock.json .
-COPY ClientApp/pokeapp/ .
+COPY Pokedex.WebApi/ClientApp/pokeapp/package.json .
+COPY Pokedex.WebApi/ClientApp/pokeapp/package-lock.json .
+COPY Pokedex.WebApi/ClientApp/pokeapp/ .
 RUN echo $ENV
 RUN npm i npm@latest -g && npm update && npm install && npm run build -- --prod
 
